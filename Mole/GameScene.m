@@ -10,12 +10,18 @@
 #import "SKTextureAtlas+Helper.h"
 #import "Mole.h"
 
+#define DEFAULT_SPEED 10
+
 static long steps = 0;//用来调整动画速度
-static long speed = 5;//根据分数来加速，默认为5
+static long speed = 0;//根据分数来加速
 
 @interface GameScene()
 {
     NSArray *_moles; //鼹鼠
+    SKLabelNode *_scoreLabel; //得分标签
+    NSInteger _score; //用户得分
+    SKLabelNode *_timerLabel; //时钟标签
+    NSDate *_startTime; //游戏开始时间
 }
 
 @end
@@ -63,6 +69,28 @@ static NSArray *sShareMoleThumpFrames = nil;
         [lower setScale:0.7f];
     }
     [self addChild:lower];
+    
+    //3.添加得分标签
+    SKLabelNode *scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    scoreLabel.text = @"Score: 0";
+    scoreLabel.fontSize = 10;
+    scoreLabel.fontColor = [SKColor whiteColor];
+    scoreLabel.position = CGPointMake(20, 200);
+    scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+    scoreLabel.zPosition = 4;
+    [self addChild:scoreLabel];
+    _scoreLabel = scoreLabel;
+    
+    //4.添加时间标签
+    SKLabelNode *timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    timerLabel.text = @"00:00:00";
+    timerLabel.fontSize = 10;
+    timerLabel.fontColor = [SKColor whiteColor];
+    timerLabel.position = CGPointMake(self.size.width - 60, self.size.height - 10 - 200);
+    timerLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+    timerLabel.zPosition = 4;
+    [self addChild:timerLabel];
+    _timerLabel = timerLabel;
 }
 
 #pragma mark 加载鼹鼠到数组
@@ -86,9 +114,10 @@ static NSArray *sShareMoleThumpFrames = nil;
 {
     CGFloat xOffSet = 110.0;
     CGPoint startPoint = CGPointMake(self.size.width / 2.0 - xOffSet, self.size.height / 2.0 - 80);
-    [_moles enumerateObjectsUsingBlock:^(SKSpriteNode *mole, NSUInteger idx, BOOL *stop) {
+    [_moles enumerateObjectsUsingBlock:^(Mole *mole, NSUInteger idx, BOOL *stop) {
         CGPoint p = CGPointMake(startPoint.x + idx * xOffSet, startPoint.y);
         [mole setPosition:p];
+        mole.hiddenY = p.y;
         [self addChild:mole];
     }];
 }
@@ -99,6 +128,8 @@ static NSArray *sShareMoleThumpFrames = nil;
         [self setupUI];
         [self loadMoles];
         [self setupMoles];
+        //记录游戏开始时间
+        _startTime = [NSDate date];
     }
     return self;
 }
@@ -107,7 +138,12 @@ static NSArray *sShareMoleThumpFrames = nil;
 -(void)update:(NSTimeInterval)currentTime
 {
     steps++;
-    if (steps % speed == 0) {
+    //获得当前系统时间，并计算与开始时间间隔
+    NSInteger dt = [[NSDate date] timeIntervalSinceDate:_startTime];
+    NSString *timeStr = [NSString stringWithFormat:@"%02ld:%02ld:%02ld",(dt/3600),((dt%3600)/60), (dt%60)];
+    _timerLabel.text = timeStr;
+    speed = ((_score / 100) > 9 ? 9 : speed);
+    if (steps % (DEFAULT_SPEED - speed) == 0) {
         NSInteger num = arc4random_uniform(3);
         Mole *mole = _moles[num];
         [mole moveUp];
@@ -119,7 +155,7 @@ static NSArray *sShareMoleThumpFrames = nil;
 //由于游戏开发中，素材经常会发生变化，因此加载素材的方法，最好单独使用一个方法完成，这样便于应用程序的维护
 +(void)loadSceneAssets
 {
-    NSLog(@"实际加载素材");
+    XLog(@"实际加载素材");
     //加载场景所需的素材
     //背景材质
     SKTextureAtlas *atlas = [SKTextureAtlas atlasWithNamed:@"background"];
@@ -159,5 +195,20 @@ static NSArray *sShareMoleThumpFrames = nil;
     });
 }
 
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    //获取到用户打到鼹鼠
+    UITouch *touch = [touches anyObject];
+    CGPoint loaction = [touch locationInNode:self];
+    //取出用户点击的节点
+    SKNode  *node = [self nodeAtPoint:loaction];
+    if ([node.name isEqualToString:@"mole"]) {
+        Mole *mole = (Mole *)node;
+        [mole beThumped];
+        _score += 10;
+        _scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", _score];
+        XLog(@"打到啦");
+    }
+}
 
 @end

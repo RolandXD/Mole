@@ -14,10 +14,10 @@
 {
     if (IS_IPAD) {
         atlasName = [NSString stringWithFormat:@"%@-ipad", atlasName];
-        NSLog(@"ipad");
+        XLog(@"ipad");
     }else if (IS_IPHONE_5){
         atlasName = [NSString stringWithFormat:@"%@-568", atlasName];
-        NSLog(@"iphone5");
+        XLog(@"iphone5");
     }
     
     return [SKTextureAtlas atlasNamed:atlasName];

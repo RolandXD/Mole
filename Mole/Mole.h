@@ -11,14 +11,23 @@
 @interface Mole : SKSpriteNode
 
 /**
+ *  鼹鼠隐藏时的Y轴坐标
+ */
+@property (nonatomic, assign) CGFloat hiddenY;
+
+/**
  *  工厂方法
  *
  */
 +(instancetype)moleWithTexture:(SKTexture *)texture andLaughs:(NSArray *)laughs andThumps:(NSArray *)thumps;
 
-
 /**
  *  鼹鼠出洞动画
  */
 -(void)moveUp;
+
+/**
+ *  鼹鼠被击中的动画
+ */
+-(void)beThumped;
 @end
