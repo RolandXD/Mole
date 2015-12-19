@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D575FC7E1C25BCBA005E7538 /* GameScene_iPad.m in Sources */ = {isa = PBXBuildFile; fileRef = D575FC7D1C25BCBA005E7538 /* GameScene_iPad.m */; };
 		D5E0A0A11C2462FF00766D4C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D5E0A0A01C2462FF00766D4C /* main.m */; };
 		D5E0A0A41C2462FF00766D4C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D5E0A0A31C2462FF00766D4C /* AppDelegate.m */; };
 		D5E0A0A71C2462FF00766D4C /* GameScene.m in Sources */ = {isa = PBXBuildFile; fileRef = D5E0A0A61C2462FF00766D4C /* GameScene.m */; };
@@ -42,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D575FC7C1C25BCBA005E7538 /* GameScene_iPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameScene_iPad.h; sourceTree = "<group>"; };
+		D575FC7D1C25BCBA005E7538 /* GameScene_iPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameScene_iPad.m; sourceTree = "<group>"; };
 		D5E0A09B1C2462FF00766D4C /* Mole.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mole.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5E0A09F1C2462FF00766D4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D5E0A0A01C2462FF00766D4C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 				D5E0A0EE1C2490B900766D4C /* Mole.m */,
 				D5E0A0A51C2462FF00766D4C /* GameScene.h */,
 				D5E0A0A61C2462FF00766D4C /* GameScene.m */,
+				D575FC7C1C25BCBA005E7538 /* GameScene_iPad.h */,
+				D575FC7D1C25BCBA005E7538 /* GameScene_iPad.m */,
 				D5E0A0AA1C2462FF00766D4C /* GameViewController.h */,
 				D5E0A0AB1C2462FF00766D4C /* GameViewController.m */,
 				D5E0A0E61C24665100766D4C /* Common.h */,
@@ -340,6 +345,7 @@
 				D5E0A0A71C2462FF00766D4C /* GameScene.m in Sources */,
 				D5E0A0A11C2462FF00766D4C /* main.m in Sources */,
 				D5E0A0EB1C24675F00766D4C /* SKTextureAtlas+Helper.m in Sources */,
+				D575FC7E1C25BCBA005E7538 /* GameScene_iPad.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,6 +8,7 @@
 
 #import "GameViewController.h"
 #import "GameScene.h"
+#import "GameScene_iPad.h"
 
 @implementation GameViewController
 
@@ -29,7 +30,12 @@
             //关闭指示器
             
             // Create and configure the scene.
-            GameScene *scene = [GameScene sceneWithSize:skView.bounds.size];
+            GameScene *scene = nil;
+            if (IS_IPAD) {
+                scene = [GameScene_iPad sceneWithSize:skView.bounds.size];
+            }else{
+                scene = [GameScene sceneWithSize:skView.bounds.size];
+            }
             scene.scaleMode = SKSceneScaleModeAspectFill;
             
             // Present the scene.

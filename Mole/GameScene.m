@@ -8,16 +8,15 @@
 
 #import "GameScene.h"
 #import "SKTextureAtlas+Helper.h"
-#import "Mole.h"
 
 #define DEFAULT_SPEED 10
+#define kFontSize (IS_IPAD ? 30 : 10)
 
 static long steps = 0;//用来调整动画速度
 static long speed = 0;//根据分数来加速
 
 @interface GameScene()
 {
-    NSArray *_moles; //鼹鼠
     SKLabelNode *_scoreLabel; //得分标签
     NSInteger _score; //用户得分
     SKLabelNode *_timerLabel; //时钟标签
@@ -73,7 +72,7 @@ static NSArray *sShareMoleThumpFrames = nil;
     //3.添加得分标签
     SKLabelNode *scoreLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     scoreLabel.text = @"Score: 0";
-    scoreLabel.fontSize = 10;
+    scoreLabel.fontSize = kFontSize;
     scoreLabel.fontColor = [SKColor whiteColor];
     scoreLabel.position = CGPointMake(20, 200);
     scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
@@ -84,9 +83,11 @@ static NSArray *sShareMoleThumpFrames = nil;
     //4.添加时间标签
     SKLabelNode *timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     timerLabel.text = @"00:00:00";
-    timerLabel.fontSize = 10;
+    timerLabel.fontSize = kFontSize;
     timerLabel.fontColor = [SKColor whiteColor];
-    timerLabel.position = CGPointMake(self.size.width - 60, self.size.height - 10 - 200);
+    CGFloat x = (IS_IPAD ? (self.size.width - 160) : (self.size.width - 60));
+    CGFloat y = (IS_IPAD ? (self.size.height - 30 - 160) : (self.size.height - 10 - 200));
+    timerLabel.position = CGPointMake(x, y);
     timerLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
     timerLabel.zPosition = 4;
     [self addChild:timerLabel];
