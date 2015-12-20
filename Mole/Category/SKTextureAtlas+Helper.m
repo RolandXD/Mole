@@ -19,7 +19,7 @@
         atlasName = [NSString stringWithFormat:@"%@-568", atlasName];
         XLog(@"iphone5");
     }
-    
+    XLog(@"%f,%f", [[UIScreen mainScreen] bounds].size.height, [[UIScreen mainScreen] bounds].size.width);
     return [SKTextureAtlas atlasNamed:atlasName];
 }
 

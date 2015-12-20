@@ -30,4 +30,9 @@
  *  鼹鼠被击中的动画
  */
 -(void)beThumped;
+
+/**
+ *  停止鼹鼠动画
+ */
+-(void)stopAction;
 @end

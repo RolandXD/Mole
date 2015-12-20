@@ -14,6 +14,7 @@
 
 static long steps = 0;//用来调整动画速度
 static long speed = 0;//根据分数来加速
+static long gameOver = 10; //判断游戏结束
 
 @interface GameScene()
 {
@@ -21,6 +22,10 @@ static long speed = 0;//根据分数来加速
     NSInteger _score; //用户得分
     SKLabelNode *_timerLabel; //时钟标签
     NSDate *_startTime; //游戏开始时间
+    SKLabelNode *_loseLabel; //lose标签
+    NSInteger _lose; //lose计数
+    SKLabelNode *_noteLabel; //游戏提示标签
+    BOOL _isGameOver; //游戏结束
 }
 
 @end
@@ -52,10 +57,6 @@ static NSArray *sShareMoleThumpFrames = nil;
     //设置锚点
     upper.anchorPoint = CGPointMake(0.5, 0.0);
     upper.position = center;
-    if (IS_IPHONE_5) {
-        //设置图片缩放比例
-        [upper setScale:0.7f];
-    }
     [self addChild:upper];
     //2.2下面的草
     SKSpriteNode *lower = [SKSpriteNode spriteNodeWithTexture:sShareLowerTexture];
@@ -63,10 +64,6 @@ static NSArray *sShareMoleThumpFrames = nil;
     lower.anchorPoint = CGPointMake(0.5, 1.0);
     lower.position = center;
     lower.zPosition = 2;
-    if (IS_IPHONE_5) {
-        //设置图片缩放比例
-        [lower setScale:0.7f];
-    }
     [self addChild:lower];
     
     //3.添加得分标签
@@ -74,7 +71,10 @@ static NSArray *sShareMoleThumpFrames = nil;
     scoreLabel.text = @"Score: 0";
     scoreLabel.fontSize = kFontSize;
     scoreLabel.fontColor = [SKColor whiteColor];
-    scoreLabel.position = CGPointMake(20, 200);
+    CGFloat ScoreX = (IS_IPAD ? (20) : (20));
+    CGFloat ScoreY = (IS_IPAD ? (200) : (100));
+    XLog(@"scoreLabel x:%f,y:%f",ScoreX,ScoreY);
+    scoreLabel.position = CGPointMake(ScoreX, ScoreY);
     scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
     scoreLabel.zPosition = 4;
     [self addChild:scoreLabel];
@@ -85,13 +85,41 @@ static NSArray *sShareMoleThumpFrames = nil;
     timerLabel.text = @"00:00:00";
     timerLabel.fontSize = kFontSize;
     timerLabel.fontColor = [SKColor whiteColor];
-    CGFloat x = (IS_IPAD ? (self.size.width - 160) : (self.size.width - 60));
-    CGFloat y = (IS_IPAD ? (self.size.height - 30 - 160) : (self.size.height - 10 - 200));
-    timerLabel.position = CGPointMake(x, y);
+    CGFloat timerX = (IS_IPAD ? (self.size.width - 160) : (self.size.width - 60));
+    CGFloat timerY = (IS_IPAD ? (self.size.height - 30 - 160) : (self.size.height - 10 - 60));
+    XLog(@"timerLabel x:%f,y:%f",timerX,timerY);
+    timerLabel.position = CGPointMake(timerX, timerY);
     timerLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
     timerLabel.zPosition = 4;
     [self addChild:timerLabel];
     _timerLabel = timerLabel;
+    
+    //5.添加lose标签
+    SKLabelNode *loseLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    loseLabel.text = @"Lose: 0";
+    loseLabel.fontSize = kFontSize;
+    loseLabel.fontColor = [SKColor whiteColor];
+    CGFloat loseX = (IS_IPAD ? (260) : (120));
+    CGFloat loseY = (IS_IPAD ? (200) : (100));
+    XLog(@"loseLabel x:%f,y:%f",loseX,loseY);
+    loseLabel.position = CGPointMake(loseX, loseY);
+    loseLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+    loseLabel.zPosition = 4;
+    [self addChild:loseLabel];
+    _loseLabel = loseLabel;
+    
+    //6.添加note标签
+    SKLabelNode *noteLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    noteLabel.fontSize = (IS_IPAD ? 30 : 20);
+    noteLabel.fontColor = [SKColor redColor];
+    CGFloat noteX = (IS_IPAD ? (260) : (self.size.width / 2.0 - 40));
+    CGFloat noteY = (IS_IPAD ? (200) : (200));
+    XLog(@"noteLabel x:%f,y:%f",noteX,noteY);
+    noteLabel.position = CGPointMake(noteX, noteY);
+    noteLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeLeft;
+    noteLabel.zPosition = 4;
+    [self addChild:noteLabel];
+    _noteLabel = noteLabel;
 }
 
 #pragma mark 加载鼹鼠到数组
@@ -102,9 +130,7 @@ static NSArray *sShareMoleThumpFrames = nil;
     for (NSInteger i = 0; i < 3; i++) {
         //精灵节点
         Mole *mole = [Mole moleWithTexture:sShareMoleTexture andLaughs:sShareMoleLaughFrames andThumps:sShareMoleThumpFrames];
-        if (IS_IPHONE_5){
-            [mole setScale:0.7f];
-        }
+ 
         [arrayM addObject:mole];
     }
     _moles = arrayM;
@@ -113,8 +139,8 @@ static NSArray *sShareMoleThumpFrames = nil;
 #pragma mark 设置鼹鼠的位置
 -(void)setupMoles
 {
-    CGFloat xOffSet = 110.0;
-    CGPoint startPoint = CGPointMake(self.size.width / 2.0 - xOffSet, self.size.height / 2.0 - 80);
+    CGFloat xOffSet = 155.0;
+    CGPoint startPoint = CGPointMake(self.size.width / 2.0 - xOffSet, self.size.height / 2.0 - 100);
     [_moles enumerateObjectsUsingBlock:^(Mole *mole, NSUInteger idx, BOOL *stop) {
         CGPoint p = CGPointMake(startPoint.x + idx * xOffSet, startPoint.y);
         [mole setPosition:p];
@@ -123,14 +149,45 @@ static NSArray *sShareMoleThumpFrames = nil;
     }];
 }
 
+-(void)startGame
+{
+    [self setupUI];
+    [self loadMoles];
+    [self setupMoles];
+    //记录游戏开始时间
+    _startTime = [NSDate date];
+    //得分
+    _score = 0;
+    //lose计数
+    _lose = 0;
+    //游戏标识符
+    _isGameOver = NO;
+    steps = 0;
+    _noteLabel.text = @"";
+    _scoreLabel.text = [NSString stringWithFormat:@"Score: %zi", _score];
+    _loseLabel.text = [NSString stringWithFormat:@"Lose: %zi", _lose];
+}
+
+-(void)stopGame
+{
+    for (NSInteger i = 0; i < 3; i++) {
+        [_moles[i] stopAction];
+    }
+}
+
+-(void)isGameOver
+{
+    if (_lose == gameOver) {
+        _noteLabel.text = @"Game Over!";
+        [self stopGame];
+        _isGameOver = YES;
+    }
+}
+
 -(instancetype)initWithSize:(CGSize)size
 {
     if (self = [super initWithSize:size]) {
-        [self setupUI];
-        [self loadMoles];
-        [self setupMoles];
-        //记录游戏开始时间
-        _startTime = [NSDate date];
+        [self startGame];
     }
     return self;
 }
@@ -141,7 +198,7 @@ static NSArray *sShareMoleThumpFrames = nil;
     steps++;
     //获得当前系统时间，并计算与开始时间间隔
     NSInteger dt = [[NSDate date] timeIntervalSinceDate:_startTime];
-    NSString *timeStr = [NSString stringWithFormat:@"%02ld:%02ld:%02ld",(dt/3600),((dt%3600)/60), (dt%60)];
+    NSString *timeStr = [NSString stringWithFormat:@"%02zi:%02zi:%02zi",(dt/3600),((dt%3600)/60), (dt%60)];
     _timerLabel.text = timeStr;
     speed = ((_score / 100) > 9 ? 9 : speed);
     if (steps % (DEFAULT_SPEED - speed) == 0) {
@@ -207,8 +264,16 @@ static NSArray *sShareMoleThumpFrames = nil;
         Mole *mole = (Mole *)node;
         [mole beThumped];
         _score += 10;
-        _scoreLabel.text = [NSString stringWithFormat:@"Score: %ld", _score];
+        _scoreLabel.text = [NSString stringWithFormat:@"Score: %zi", _score];
         XLog(@"打到啦");
+    }else{
+        _lose++;
+        _loseLabel.text = [NSString stringWithFormat:@"Lose: %zi", _lose];
+        XLog(@"没有打中");
+        [self isGameOver];
+        if (_isGameOver == YES) {
+            [self startGame];
+        }
     }
 }
 

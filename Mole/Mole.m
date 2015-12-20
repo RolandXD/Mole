@@ -11,6 +11,8 @@
 @interface Mole ()
 {
     BOOL _isThumped; //鼹鼠被打的标识
+    SKAction *_upSequence; //鼹鼠出洞动画组
+    SKAction *_thumpSequence; //鼹鼠被打动画组
 }
 //鼹鼠笑操作
 @property(nonatomic, strong)SKAction *laughAction;
@@ -42,7 +44,7 @@
     return mole;
 }
 
-#pragma mark 鼹鼠出洞动画
+#pragma mark 鼹鼠出洞动画Spue
 -(void)moveUp
 {
     if ([self hasActions]) {
@@ -79,6 +81,13 @@
     [self runAction:s completion:^{
         _isThumped = NO;
     }];
+}
+
+#pragma mark 停止鼹鼠动画
+-(void)stopAction
+{
+    XLog(@"停止鼹鼠动画");
+    [self removeAllActions];
 }
 
 @end
